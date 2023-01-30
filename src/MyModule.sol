@@ -5,7 +5,9 @@ import "@zodiac/contracts/core/Module.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Safe } from "@safe-contracts/contracts/Safe.sol";
 
-
+/// @title A module to enable withdrawing a token with a signature from gni
+/// @author Saadman Masud
+/// @notice You can enable this on gnosis safe to withdraw a token uisng a safe owners signature
 contract MyModule is Module {
     using ECDSA for bytes32;
 
@@ -36,13 +38,19 @@ contract MyModule is Module {
         safe = Safe(payable(_owner));
     }
 
-    function withdrawWithSignature(address _to, uint amount, uint nonce, bytes memory _sigs,bytes32 digest) external {
-        bytes32 txHash = getTxHash(_to, amount, nonce);
+    /// @notice Transfer tokens from safe using signature of owner
+    /// @param _to address to withdraw too
+    /// @param _amount amount to withdraw 
+    /// @param _nonce nonce to stop replay attack
+    /// @param _sigs signature of an owner of the safe needed
+    /// @param digest for signature
+    function withdrawWithSignature(address _to, uint _amount, uint _nonce, bytes memory _sigs, bytes32 digest) external {
+        bytes32 txHash = getTxHash(_to, _amount, _nonce); 
 
         require(!executed[txHash], "tx executed");
         require(_checkSigs(_sigs,digest), "invalid sig");
 
-        bytes memory data = abi.encodeWithSelector(0xa9059cbb, _to, amount);
+        bytes memory data = abi.encodeWithSelector(0xa9059cbb, _to, _amount);
         exec(token, 0,data , Enum.Operation.Call);
     }
 
@@ -52,6 +60,11 @@ contract MyModule is Module {
         return valid;
     }
 
+    /// @notice Get transaction hash 
+    /// @param _to address to withdraw too
+    /// @param _amount amount to withdraw 
+    /// @param _nonce nonce to stop replay attack
+    /// @return keccack hash of the tx to address, ammount and nonce 
     function getTxHash(address _to, uint _amount,uint _nonce) public view returns (bytes32) {
         return keccak256(abi.encodePacked(keccak256("transfer(address to, uint256 amount)"),_to, _amount,_nonce));
     }
