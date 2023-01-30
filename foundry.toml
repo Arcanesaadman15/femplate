@@ -7,4 +7,9 @@ solc_version = '0.8.17'
 auto_detect_solc = false
 optimizer_runs = 1_000
 
-remappings = ["@gnosis/=lib/zodiac/"]
+remappings = [
+    "@zodiac/=lib/zodiac/",
+    "@safe-contracts/=lib/safe-contracts",
+    "@openzeppelin-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+    "@openzeppelin/=lib/openzeppelin-contracts/"
+    ]
