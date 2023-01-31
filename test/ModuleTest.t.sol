@@ -12,11 +12,13 @@ contract ModuleTest is BaseModuleTest {
          assertEq(unicorn.symbol(), "Unicorn");
     }
 
+//Test if module can be enabled by safe
     function testEnableModule() public subtest{
         mockSafe.enableModule(address(module));
         assert(mockSafe.isModuleEnabled(address(module)));
     }
 
+//Test if unicorn can be transfered from the safe using sig of an owner
     function testTransfeUsingSignature() public subtest {
         mockSafe.enableModule(address(module));
         assert(mockSafe.isModuleEnabled(address(module)));
@@ -37,6 +39,7 @@ contract ModuleTest is BaseModuleTest {
         vm.stopPrank();
     }
 
+//Test signature does not work from accounts that are not owners of the safe
     function testFailTransfeUsingSignature() public subtest {
         mockSafe.enableModule(address(module));
         assert(mockSafe.isModuleEnabled(address(module)));
